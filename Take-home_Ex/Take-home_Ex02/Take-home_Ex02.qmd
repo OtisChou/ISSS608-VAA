@@ -16,7 +16,7 @@ In this take home exercise, we focus on providing insight and implement to our c
 ## 2.1 Loading package
 
 ```{r}
-pacman::p_load(tidyverse,haven,dplyr,tidyr,ggplot2,patchwork,ggthemes)
+pacman::p_load(tidyverse,haven,dplyr,tidyr,ggplot2,patchwork,ggthemes,ggiraph,plotly)
 ```
 
 ## 2.2 Load Data set into R enviroment
@@ -251,67 +251,40 @@ ggplot(school_averages_long, aes(x = Subject, y = Average_Score)) +
 
 ### 3.3.2 Remake
 
-We change it to box plot and try to put all the school and its performance in the graph. In this way, the graph looks much more crowded but we are able to see all the school's performance along with its ID.#need a little bit zoom in
+We add interactive function into the scatter graph, now we are about to see the difference of the performance. At the same time, if we interactive the data point, we can see the school ID clearly.
+
+::: panel-tabset
+## Math
+```{r}
+school_averages$CNTSCHID=as.character(school_averages$CNTSCHID)
+plot<-plot_ly(data = school_averages, 
+             x = ~CNTSCHID, 
+             y = ~Math,
+        type='scatter')
+plot<-layout(plot,title = 'Math Performance among different School')
+plot
+```
+## Science
 
 ```{r}
-#| code-fold: true
-options(repr.plot.height = 100)
-
-p4 <- ggplot(new_data, aes(x = as.factor(CNTSCHID), y = Math)) +
-  geom_boxplot(width = 0.3, position = position_dodge(width = 0.2), lwd = 0.5, outlier.shape = NA) +
-  stat_summary(
-    fun = mean,
-    geom = "point",
-    shape = 18,
-    size = 0.2,
-    position = position_dodge(width = 0.5),
-    color = "red"
-  ) +
-  labs(title = "Math Scores by School") +
-  ylab("Math Score") +
-  xlab("School ID") +
-  scale_y_continuous(limits = c(0, 1000), breaks = seq(0, 1000, by = 100)) +
-  coord_flip() +
-  theme_minimal(base_size = 3.5)
-
-p5 <- ggplot(new_data, aes(x = as.factor(CNTSCHID), y = Science)) +
-  geom_boxplot(width = 0.3, position = position_dodge(width = 0.2), lwd = 0.5, outlier.shape = NA) +
-  stat_summary(
-    fun = mean,
-    geom = "point",
-    shape = 18,
-    size = 0.2,
-    position = position_dodge(width = 0.5),
-    color = "red"
-  ) +
-  labs(title = "Science Scores by School") +
-  ylab("Science Score") +
-  xlab("School ID") +
-  scale_y_continuous(limits = c(0, 1000), breaks = seq(0, 1000, by = 100)) +
-  coord_flip() +
-  theme_minimal(base_size = 3.5)
-
-p6 <- ggplot(new_data, aes(x = as.factor(CNTSCHID), y = Reading)) +
-  geom_boxplot(width = 0.3, position = position_dodge(width = 0.2), lwd = 0.5, outlier.shape = NA) +
-  stat_summary(
-    fun = mean,
-    geom = "point",
-    shape = 18,
-    size = 0.2,
-    position = position_dodge(width = 0.5),
-    color = "red"
-  ) +
-  labs(title = "Reading Scores by School") +
-  ylab("Reading Score") +
-  xlab("School ID") +
-  scale_y_continuous(limits = c(0, 1000), breaks = seq(0, 1000, by = 100)) +
-  coord_flip() +
-  theme_minimal(base_size = 3.5)
-
-
-(p4|p5|p6)+plot_annotation(tag_levels = 'I')
-
+plot<-plot_ly(data = school_averages, 
+             x = ~CNTSCHID, 
+             y = ~Science,
+        type='scatter')
+plot<-layout(plot,title = 'Science Performance among different School')
+plot
 ```
+## Reading
+
+```{r}
+plot<-plot_ly(data = school_averages, 
+             x = ~CNTSCHID, 
+             y = ~Reading,
+        type='scatter')
+plot<-layout(plot,title = 'Reading Performance among different School')
+plot
+```
+:::
 
 ## 3.4 Subject Performance by socioeconomic status
 
