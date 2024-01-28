@@ -111,6 +111,8 @@ final_dataset <- na.omit(final_dataset)
 We are going to graph the distribution of performance in each subject to get a clearer view about how Singapore students doing in the exam.
 
 ```{r}
+#| code-fold: True
+#| code-summary: "show code"
 p1<- ggplot(data=final_dataset, 
              aes(x = PV1READ)) +
   geom_histogram(bins=20, 
@@ -144,26 +146,69 @@ We can notice all the plots have left skewed which indicate the median of the pe
 
 ## 2.2 Factors might have an impact on performance
 
-In this section, we are going to examine different factors and their impacts on student performance. \### 2.2.1 School vs. Performance In this section we use box plot to illustrate the performance in different school. To see if there is any difference.
+In this section, we are going to examine different factors and their impacts on student performance.
+
+### 2.2.1 School vs. Performance 
+
+In this section we use box plot to illustrate the performance in different school. To see if there is any difference. Since there are too many school in our data set, the visualization on all of them will be difficulty to read, therefore we are going to compare the differences between schools instead.
+The code chunk below shows the data preparation phrase
+```{r}
+average_math_SG <- mean(final_dataset$PV1MATH)
+average_scie_SG <- mean(final_dataset$PV1SCIE)
+average_read_SG <- mean(final_dataset$PV1READ)
+
+final_dataset_sch <- final_dataset %>%
+  group_by(CNTSCHID) %>%
+  mutate(average_math_diff = abs(mean(PV1MATH)-average_math_SG),
+         average_science_diff = abs(mean(PV1SCIE)-average_scie_SG),
+         average_read_diff = abs(mean(PV1READ)-average_read_SG)) %>%
+  select(CNTSCHID, average_math_diff, average_science_diff, average_read_diff) %>%
+  unique() 
+```
 
 ```{r}
-p4<-ggplot(data = final_dataset, aes(x = CNTSCHID, y = PV1READ)) +
+p4 <-ggplot(data = final_dataset_sch, aes(y = average_math_diff)) +
   geom_boxplot() +
-  theme(axis.text.x = element_blank())+
-  ggtitle("Impact of School on Read Performance")
-p5<-ggplot(data = final_dataset, aes(x = CNTSCHID, y = PV1SCIE)) +
+   geom_boxplot(width = 0.1) +
+  stat_boxplot(geom = "errorbar", width = 0.05) +
+  stat_summary(aes(x = 0),
+               geom = "point",       
+               fun = "mean",         
+               colour = "red", 
+               size = 1) +
+  scale_y_continuous(NULL, limits = c(0,220)) +
+  scale_x_continuous("average math diff", breaks = NULL) +
+  theme_minimal()
+    
+p5 <-ggplot(data = final_dataset_sch, aes(y = average_science_diff)) +
   geom_boxplot() +
-  theme(axis.text.x = element_blank())+
-  ggtitle("Impact of School on Science Performance")
-p6<-ggplot(data = final_dataset, aes(x = CNTSCHID, y = PV1MATH)) +
+   geom_boxplot(width = 0.1) +
+  stat_boxplot(geom = "errorbar", width = 0.05) +
+  stat_summary(aes(x = 0),
+               geom = "point",       
+               fun = "mean",         
+               colour = "red", 
+               size = 1) +
+  scale_y_continuous(NULL, limits = c(0,220)) +
+  scale_x_continuous("average science diff", breaks = NULL) +
+  theme_minimal()
+p6<-ggplot(data = final_dataset_sch, aes(y = average_read_diff)) +
   geom_boxplot() +
-  theme(axis.text.x = element_blank())+
-  ggtitle("Impact of School on Math Performance")
-school_impact<-(p4/p5)+p6
+   geom_boxplot(width = 0.1) +
+  stat_boxplot(geom = "errorbar", width = 0.05) +
+  stat_summary(aes(x = 0),
+               geom = "point",       
+               fun = "mean",         
+               colour = "red", 
+               size = 1) +
+  scale_y_continuous(NULL, limits = c(0,220)) +
+  scale_x_continuous("average read diff", breaks = NULL) +
+  theme_minimal()
+school_impact<-p4|p5|p6
 school_impact
 ```
 
-In the graph, we can conclude that there is huge difference on performance across different school. Some of the schools' lowest boundary is still higher than some of others' highest boundary. Therefore, we can conclude that the school have a serious impact on the final performance of student.
+In the graph, we can conclude that there is huge difference on performance across different school.The difference between school can range up to 220. Therefore, we can conclude that choosing different school could definitely affect students' performance.
 
 ### 2.2.2 Gender vs. Performance
 
