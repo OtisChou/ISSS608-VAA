@@ -251,7 +251,7 @@ ggplot(school_averages_long, aes(x = Subject, y = Average_Score)) +
 
 ### 3.3.2 Remake
 
-We change it to box plot and try to put all the school and its performance in the graph. In this way, the graph looks much more crowded but we are able to see all the school's performance along with its ID.
+We change it to box plot and try to put all the school and its performance in the graph. In this way, the graph looks much more crowded but we are able to see all the school's performance along with its ID.#need a little bit zoom in
 
 ```{r}
 #| code-fold: true
@@ -285,7 +285,7 @@ p5 <- ggplot(new_data, aes(x = as.factor(CNTSCHID), y = Science)) +
     color = "red"
   ) +
   labs(title = "Science Scores by School") +
-  ylab("Math Score") +
+  ylab("Science Score") +
   xlab("School ID") +
   scale_y_continuous(limits = c(0, 1000), breaks = seq(0, 1000, by = 100)) +
   coord_flip() +
@@ -301,8 +301,8 @@ p6 <- ggplot(new_data, aes(x = as.factor(CNTSCHID), y = Reading)) +
     position = position_dodge(width = 0.5),
     color = "red"
   ) +
-  labs(title = "Science Scores by School") +
-  ylab("Math Score") +
+  labs(title = "Reading Scores by School") +
+  ylab("Reading Score") +
   xlab("School ID") +
   scale_y_continuous(limits = c(0, 1000), breaks = seq(0, 1000, by = 100)) +
   coord_flip() +
