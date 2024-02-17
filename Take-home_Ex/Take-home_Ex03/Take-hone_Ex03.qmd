@@ -204,7 +204,7 @@ girafe(
 )   
 ```
 
-## 5.3 Cycle plot 
+### 5.3 Cycle plot 
 In this section cycle plot will be create to show the time-series patterns and trend of rainfall data. In this way user can see the average rainfall of each year and the daily rainfall information in one graph. 
 ```{r}
 ggplot() + 
