@@ -1,0 +1,231 @@
+---
+title: "Take Home Exercise 03"
+author: "Ruosong"
+execute: 
+  warning: false 
+---
+
+## 1.Overview
+
+In this take home exercise, the rainfall data provided by Singapore Queen Street station will be re-designed to enhance the user experience in data discovery and/or visual story-telling.
+
+## 2.Task
+
+-   Redesign the [historical daily rainfall data set](http://www.weather.gov.sg/climate-historical-daily/) from Queen street weather station.
+
+-   Select either daily rainfall records of December of the year 1983, 1993, 2003, 2013 and 2023 and create an analytics-driven data visualization,
+
+-   Appropriate interactive techniques will be applied to enhance the user experience in data discovery and/or visual story-telling.
+
+## 3.Install Packages
+
+In this exercise multiple packages will be involved to create interactive and animated time series data visualization.
+
+```{r}
+#| code-fold: True
+pacman::p_load(ggrepel, patchwork, 
+               ggthemes, hrbrthemes,
+               scales, viridis, lubridate, 
+               ggthemes, gridExtra, readxl, knitr, 
+               data.table, CGPfunctions, 
+               ggHoriPlot, tidyverse,ggiraph, plotly, 
+               patchwork, DT,ggdist, ggridges, ggthemes,
+               colorspace,ggstatsplot,readxl, performance, 
+               parameters, see,ungeviz, plotly, crosstalk,
+               DT, ggdist, ggridges,colorspace, gganimate,
+               FunnelPlotR,readxl, gifski, gapminder,gganimate,ggpubr)
+```
+
+## 4.Data Preparation
+
+## 4.1 Import orignal data into R environment
+
+In this section we are going to import five data sets into R environment which are daily rainfall data in December of year 1983, 1993, 2003, 2013, 2023.
+
+```{r}
+rain1983 <- read_csv("data/DAILYDATA_S77_198312.csv") 
+rain1993 <- read_csv("data/DAILYDATA_S77_199312.csv") 
+rain2003 <- read_csv("data/DAILYDATA_S77_200312.csv") 
+rain2013 <- read_csv("data/DAILYDATA_S77_201312.csv") 
+rain2023 <- read_csv("data/DAILYDATA_S77_202312.csv") 
+```
+
+### 4.2 Data Cleaning
+
+Since we do not have much columns and rows in our data sets, we can just examine them by just view() them. The result shows there is no missing value and duplicates.
+
+::: panel-tabset
+#### 1983
+
+```{r}
+rain1983
+```
+
+#### 1993
+
+```{r}
+rain1993
+```
+
+#### 2003
+
+```{r}
+rain2003
+```
+
+#### 2013
+
+```{r}
+rain2013
+```
+
+#### 2023
+
+```{r}
+rain2023
+```
+:::
+
+### 4.3 Data Wrangling
+Since the background knowledge about the data sets such as station and month are already given, those columns will be remove. Also, multiple data sets is not good for our further analyses. Therefore, in this section, the redundant columns will be remove and all the data sets will be merged into one. I also create a long data set called rainfall_long, that will be helpful when we create graphs.
+```{r}
+rain1983$rainfall_1983<-rain1983$`Daily Rainfall Total (mm)`
+rain1993$rainfall_1993<-rain1993$`Daily Rainfall Total (mm)`
+rain2003$rainfall_2003<-rain2003$`Daily Rainfall Total (mm)`
+rain2013$rainfall_2013<-rain2013$`Daily Rainfall Total (mm)`
+rain2023$rainfall_2023<-rain2023$`Daily Rainfall Total (mm)`
+
+rain1983 <- rain1983 %>% select(Day,rainfall_1983)
+rain1993 <- rain1993 %>% select(Day,rainfall_1993)
+rain2003 <- rain2003 %>% select(Day,rainfall_2003)
+rain2013 <- rain2013 %>% select(Day,rainfall_2013)
+rain2023 <- rain2023 %>% select(Day,rainfall_2023)
+
+rainfall <- rain1983 %>%
+  inner_join(rain1993, by = "Day") %>%
+  inner_join(rain2003, by = "Day") %>%
+  inner_join(rain2013, by = "Day") %>%
+  inner_join(rain2023, by = "Day")
+rainfall
+
+library(tidyr)
+
+# Gather columns into long format
+rainfall_long <- gather(rainfall, key = "Year", value = "Rainfall", starts_with("rainfall_"))
+
+g_year <- sub("rainfall_", "", rainfall_long$Year)
+
+rainfall_long$ActualYear <- g_year
+rainfall_long
+```
+
+## 5.Data Visulization
+### 5.1 Compare Rainfall Day by Day Among Different Years
+By using the long version of the data set, we are able to plot all rainfall information into one graph by different days. Then we can easily compare each days' rainfall among different year by simply click the bar under the graph. 
+```{r}
+gg <- ggplot(rainfall_long, 
+       aes(x = Day, 
+           y = Rainfall,
+           size = Rainfall,
+           color = as.factor(ActualYear)
+           )) +
+  geom_point(aes(size = Rainfall, frame = Day),
+             alpha = 0.7) +
+  scale_colour_manual(values = c("1983" = "blue", 
+                                  "1993" = "red", 
+                                  "2003" = "green", 
+                                  "2013" = "orange", 
+                                  "2023" = "purple")) +
+  scale_size(range = c(2, 12)) +
+  labs(x = 'Days in December', 
+       y = 'Rainfall') + 
+  theme(legend.position='bottom') +
+  guides(color = guide_legend(title = "Year", 
+                             override.aes = list(size = 3),
+                             ncol = 1))
+
+ggplotly(gg)
+```
+
+### 5.2 Compare the overall Rainfall trends Among Different Years
+In this section, an overall comparison will be visualized to show the user which year has the most rainfall in December. For the bar plot, we need to calculate the average rainfall information (Avg.data) for each year in order to show a more direct information to the user.
+
+```{r}
+p1 <- ggplot(data=rainfall_long, 
+             aes(x = Day,
+                 y = Rainfall,
+                 color = as.factor(ActualYear)))+
+  geom_line_interactive(              
+    aes(tooltip = ActualYear, 
+        data_id = ActualYear),
+    show.legend = F) +               
+  scale_y_continuous(NULL,               
+                     breaks = NULL)
+
+Avg.data <- rainfall_long %>% 
+  group_by(ActualYear) %>%
+  summarise(avgvalue = mean(Rainfall))
+
+p2 <- ggplot(
+  data=Avg.data, 
+  aes(x = as.factor(ActualYear),
+      y = avgvalue,
+      fill = as.factor(ActualYear))
+  ) +
+  geom_col_interactive(
+    aes(tooltip = ActualYear, 
+        data_id = ActualYear),
+    width = 0.8
+  )
+
+p3 <- ggplot(
+  data= rainfall_long,
+  aes(x = ActualYear,
+      y = Rainfall)) + 
+  geom_jitter_interactive(
+    aes(tooltip = ActualYear, 
+        data_id = ActualYear,
+        color = as.factor(Year))
+  ) + 
+  geom_smooth_interactive(
+    aes(tooltip = "smooth"),
+    method="lm",
+    col='red',
+    fullrange = T) 
+
+girafe(                                  
+  code = print((p1 + p2)/p3),                             
+  width_svg = 6,                         
+  height_svg = 6*0.618,
+  options = list(
+    opts_hover(css = "stroke-width:4;"),
+    opts_hover_inv(css = "opacity:0.2;") 
+  )                                        
+)   
+```
+
+## 5.3 Cycle plot 
+In this section cycle plot will be create to show the time-series patterns and trend of rainfall data. In this way user can see the average rainfall of each year and the daily rainfall information in one graph. 
+```{r}
+ggplot() + 
+  geom_line(data=rainfall_long,
+            aes(x=Day, 
+                y=Rainfall, 
+                group=ActualYear), 
+            colour="black") +
+  geom_hline(aes(yintercept=avgvalue), 
+             data=Avg.data, 
+             linetype=6, 
+             colour="red", 
+             size=0.5) + 
+  facet_grid(~ActualYear) +
+  labs(axis.text.x = element_blank(),
+       title = "Visitor arrivals from Vietnam by air, Jan 2010-Dec 2019") +
+  xlab("") +
+  ylab("No. of Visitors") +
+  theme_tufte(base_family = "Helvetica")
+```
+
+
+## Summury
+In this exercise, the December rainfall data of year 1983, 1993, 2003, 2013 and 2023 were visualized and compared. It is clear that 1993 has the most rainfall and 2023 has the second most. However, there is no clear evidence to show any pattern about how the rainfall is changing during time.
