@@ -3,7 +3,6 @@ title: "Hands on Exercise 07"
 author: "Ruosong"
 execute: 
   warning: false
-  eval: false
 ---
 
 # **21  Choropleth Mapping with R**
@@ -664,6 +663,7 @@ pacman::p_load(tmap, tidyverse, sf)
 For the purpose of this hands-on exercise, a prepared data set called *NGA_wp.rds* will be used. The data set is a polygon feature data.frame providing information on water point of Nigeria at the LGA level. You can find the data set in the *rds* sub-direct of the hands-on *data* folder.
 
 ```{r}
+#| eval: false
 NGA_wp <- read_rds("data/rds/NGA_wp.rds")
 ```
 
@@ -672,6 +672,7 @@ NGA_wp <- read_rds("data/rds/NGA_wp.rds")
 ### **23.3.1 Visualising distribution of non-functional water point**
 
 ```{r}
+#| eval: false
 p1 <- tm_shape(NGA_wp) +
   tm_fill("wp_functional",
           n = 10,
@@ -702,6 +703,7 @@ In much of our readings we have now seen the importance to map rates rather than
 We will tabulate the proportion of functional water points and the proportion of non-functional water points in each LGA. In the following code chunk, `mutate(`) from **dplyr** package is used to derive two fields, namely *pct_functional* and *pct_nonfunctional*.
 
 ```{r}
+#| eval: false
 NGA_wp <- NGA_wp %>%
   mutate(pct_functional = wp_functional/total_wp) %>%
   mutate(pct_nonfunctional = wp_nonfunctional/total_wp)
@@ -710,6 +712,7 @@ NGA_wp <- NGA_wp %>%
 ### **23.4.2 Plotting map of rate**
 
 ```{r}
+#| eval: false
 tm_shape(NGA_wp) +
   tm_fill("pct_functional",
           n = 10,
@@ -735,6 +738,7 @@ The percentile map is a special type of quantile map with six specific categorie
 Step 1: Exclude records with NA by using the code chunk below.
 
 ```{r}
+#| eval: false
 NGA_wp <- NGA_wp %>%
   drop_na()
 ```
@@ -742,6 +746,7 @@ NGA_wp <- NGA_wp %>%
 Step 2: Creating customised classification and extracting values
 
 ```{r}
+#| eval: false
 percent <- c(0,.01,.1,.5,.9,.99,1)
 var <- NGA_wp["pct_functional"] %>%
   st_set_geometry(NULL)
@@ -775,6 +780,7 @@ Firstly, we will write an R function as shown below to extract a variable (i.e.�
     -   v: vector with values (without a column name)
 
 ```{r}
+#| eval: false
 get.var <- function(vname,df) {
   v <- df[vname] %>% 
     st_set_geometry(NULL)
@@ -788,6 +794,7 @@ get.var <- function(vname,df) {
 Next, we will write a percentile mapping function by using the code chunk below.
 
 ```{r}
+#| eval: false
 percentmap <- function(vnam, df, legtitle=NA, mtitle="Percentile Map"){
   percent <- c(0,.01,.1,.5,.9,.99,1)
   var <- get.var(vnam, df)
@@ -811,6 +818,7 @@ percentmap <- function(vnam, df, legtitle=NA, mtitle="Percentile Map"){
 To run the function, type the code chunk as shown below.
 
 ```{r}
+#| eval: false
 percentmap("total_wp", NGA_wp)
 ```
 
@@ -821,6 +829,7 @@ Note that this is just a bare bones implementation. Additional arguments such as
 In essence, a box map is an augmented quartile map, with an additional lower and upper category. When there are lower outliers, then the starting point for the breaks is the minimum value, and the second break is the lower fence. In contrast, when there are no lower outliers, then the starting point for the breaks will be the lower fence, and the second break is the minimum value (there will be no observations that fall in the interval between the lower fence and the minimum value).
 
 ```{r}
+#| eval: false
 ggplot(data = NGA_wp,
        aes(x = "",
            y = wp_nonfunctional)) +
@@ -846,6 +855,7 @@ The code chunk below is an R function that creating break points for a box map.
     -   bb: vector with 7 break points compute quartile and fences
 
 ```{r}
+#| eval: false
 boxbreaks <- function(v,mult=1.5) {
   qv <- unname(quantile(v))
   iqr <- qv[4] - qv[2]
@@ -888,6 +898,7 @@ The code chunk below is an R function to extract a variable as a vector out of a
     -   v: vector with values (without a column name)
 
 ```{r}
+#| eval: false
 get.var <- function(vname,df) {
   v <- df[vname] %>% st_set_geometry(NULL)
   v <- unname(v[,1])
@@ -900,6 +911,7 @@ get.var <- function(vname,df) {
 Let’s test the newly created function
 
 ```{r}
+#| eval: false
 var <- get.var("wp_nonfunctional", NGA_wp) 
 boxbreaks(var)
 ```
@@ -909,6 +921,7 @@ boxbreaks(var)
 The code chunk below is an R function to create a box map. - arguments: - vnam: variable name (as character, in quotes) - df: simple features polygon layer - legtitle: legend title - mtitle: map title - mult: multiplier for IQR - returns: - a tmap-element (plots a map)
 
 ```{r}
+#| eval: false
 boxmap <- function(vnam, df, 
                    legtitle=NA,
                    mtitle="Box Map",
@@ -936,6 +949,7 @@ boxmap <- function(vnam, df,
 ```
 
 ```{r}
+#| eval: false
 tmap_mode("plot")
 boxmap("wp_nonfunctional", NGA_wp)
 ```
