@@ -3,6 +3,7 @@ title: "Hands on Exercise 5"
 author: "Ruosong"
 execute: 
   warning: false 
+  eval: false
 ---
 
 # 13 Creating Ternary Plot wiht R
@@ -80,11 +81,13 @@ agpop_mutated <- pop_data %>%
 Use ggtern() function of ggtern package to create a simple ternary plot.
 
 ```{r}
+#| eval: false
 ggtern(data=agpop_mutated,aes(x=YOUNG,y=ACTIVE, z=OLD)) +
   geom_point()
 ```
 
 ```{r}
+#| eval: false
 #Add better design 
 ggtern(data=agpop_mutated, aes(x=YOUNG,y=ACTIVE, z=OLD)) +
   geom_point() +
