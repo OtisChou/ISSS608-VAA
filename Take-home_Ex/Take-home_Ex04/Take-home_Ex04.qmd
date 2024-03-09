@@ -201,7 +201,7 @@ We can infer that relying solely on temperature data from the past decade to pre
 
 ## 6.Design of R Shiny
 
-![](images/R shiny design 2.png) The proposed dashboard for Singapore's weather analysis will include 3 main sections:
+![](images/R shiny design 3.png) The proposed dashboard for Singapore's weather analysis will include 3 main sections:
 
 -   Exploratory
 
@@ -212,3 +212,6 @@ We can infer that relying solely on temperature data from the past decade to pre
 This interactive user interface will feature drop-down menus for each categories: Temperature, Rainfall, and Wind. A slider will also be included to offer users an option to drag from 2013-2023 for a time-frame selection. Lastly, a location option will be implemented with choices from the five main regions in Singapore: Central Region, North Region, North-East Region, East Region and West Region, based on the station that was chosen respectively: Newton, Admiralty, Pulau Ubin, Changi, Jurong (West).
 
 Under exploratory analysis, the dashboard will provide a boxplot, dynamic line, bar charts, and heatmaps which will change according to what users choose as a filter to manipulate what is shown on the screen. These descriptive visualizations will provide information through the display of trends throughout the years for selected regions. Additional features include interaction capabilities, such as zoom features and tooltips. For all the graphs, it will correspond to all the categories for this section since they will be under the same format. Confirmatory and predictive modeling will be similar, with different graphs such as a test for confirmatory, and a forecast for prediction purposes.
+
+```         
+```
