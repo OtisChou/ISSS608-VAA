@@ -201,7 +201,7 @@ We can infer that relying solely on temperature data from the past decade to pre
 
 ## 6.Design of R Shiny
 
-![](images/design%20of%20R%20shiny.jpg) The proposed dashboard for Singapore's weather analysis will include 3 main sections:
+![](images/R shiny design 2.png) The proposed dashboard for Singapore's weather analysis will include 3 main sections:
 
 -   Exploratory
 
