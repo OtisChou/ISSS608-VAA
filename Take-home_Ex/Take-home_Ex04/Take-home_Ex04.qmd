@@ -126,7 +126,10 @@ ggplot(weatherdata, aes(x = Year, y = MeanTemp)) + geom_boxplot(fill = "lightblu
 ## Daily Max Temp
 
 ```{r}
-ggplot(weatherdata, aes(x = Year, y = MaxTemp)) + geom_boxplot(fill = "lightblue", notch = TRUE) + labs(title = "Aunnul Max Temperature by time serie", x = "Year", y = "Annual Max Temp") + theme_minimal()
+ggplot(weatherdata, aes(x = Year, y = MaxTemp)) + 
+  geom_boxplot(fill = "lightblue", notch = TRUE) +
+  labs(title = "Aunnul Max Temperature by time serie", x = "Year", y = "Annual Max Temp") +
+  theme_minimal()
 ```
 
 ## Daily Min Temp
@@ -201,7 +204,7 @@ We can infer that relying solely on temperature data from the past decade to pre
 
 ## 6.Design of R Shiny
 
-![](images/R shiny design 3.png) The proposed dashboard for Singapore's weather analysis will include 3 main sections:
+![](images/R%20shiny%20design%203.png) The proposed dashboard for Singapore's weather analysis will include 3 main sections:
 
 -   Exploratory
 
